@@ -1,0 +1,31 @@
+* climlab.nix
+Nix expressions for [[https://github.com/climlab/climlab][climlab]] and its components:
+- [[https://github.com/climlab/climlab-cam3-radiation][cam3-radiation]]
+- [[https://github.com/climlab/climlab-emanuel-convection][emanuel-convection]]
+- [[https://github.com/climlab/climlab-rrtmg][rrtmg]]
+- [[https://github.com/climlab/climlab-sbm-convection][sbm-convection]]
+
+** Usage
+#+begin_src nix
+  # flake.nix
+  {
+    inputs = {
+      climlab = {
+        url = "github:42LoCo42/climlab.nix";
+        flake = false;
+      };
+    };
+
+    outputs = { flake-utils, nixpkgs, climlab, ... }:
+      flake-utils.lib.eachDefaultSystem (system:
+        let pkgs = import nixpkgs { inherit system; }; in {
+          devShells.default = pkgs.mkShell {
+            packages = with pkgs; [
+              (python312.withPackages (p: [
+                (import climlab p)
+              ]))
+            ];
+          };
+        });
+  }
+#+end_src
